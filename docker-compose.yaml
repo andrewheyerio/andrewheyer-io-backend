@@ -5,7 +5,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - 8000:8000
+      - 8005:8000
     depends_on:
       - database
 
@@ -13,7 +13,7 @@ services:
     image: mysql:5.7.22
     restart: always
     environment:
-      MYSQL_DATABASE: ah_database
+      MYSQL_DATABASE: dev_database
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       MYSQL_ROOT_PASSWORD: root
