@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
-
+import aws_keys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -72,20 +72,32 @@ WSGI_APPLICATION = 'andrewheyer_io.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dev_database',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'database',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': 'ALTER DATABASE dev_database CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci',
-        },
+db_keys = aws_keys.get_secret()
+if db_keys:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': db_keys["dbInstanceIdentifier"],
+            'USER': db_keys["username"],
+            'PASSWORD': db_keys["password"],
+            'HOST': db_keys["host"],
+            'PORT': db_keys["port"],
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'dev_database',
+            'USER': 'root',
+            'PASSWORD': 'root',
+            'HOST': 'database',
+            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': 'ALTER DATABASE dev_database CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci',
+            },
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -130,7 +142,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES':[
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
