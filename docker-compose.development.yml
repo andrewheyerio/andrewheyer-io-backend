@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  backend:
+    depends_on:
+      - database
+    environment:
+      DB_NAME: "dev_database"
+      DB_USER: "root"
+      DB_PASSWORD: "root"
+      DB_HOST: "database"
+      DB_PORT: "3306"
+      DEVELOPMENT: "true"
+
+  database:
+    image: mysql:5.7.22
+    restart: always
+    environment:
+      MYSQL_DATABASE: dev_database
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - .dbdata:/var/lib/mysql
+    ports:
+      - 33068:3306

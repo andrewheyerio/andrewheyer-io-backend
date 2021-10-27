@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
-import aws_keys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -72,30 +71,34 @@ WSGI_APPLICATION = 'andrewheyer_io.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-db_keys = aws_keys.get_secret()
-if db_keys:
+
+# The dev and prod settings for db is separated since for the Options settings. In production the modification to DB is
+# done via online configuration GUI. Whereas for development we can directly modify the options. The options we set is
+# due to an issue reading characters like 'ä'.
+if os.getenv('DEVELOPMENT'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': db_keys["dbInstanceIdentifier"],
-            'USER': db_keys["username"],
-            'PASSWORD': db_keys["password"],
-            'HOST': db_keys["host"],
-            'PORT': db_keys["port"],
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'dev_database',
-            'USER': 'root',
-            'PASSWORD': 'root',
-            'HOST': 'database',
-            'PORT': '3306',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
             'OPTIONS': {
                 'init_command': 'ALTER DATABASE dev_database CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci',
             },
+        }
+    }
+
+if os.getenv('PRODUCTION'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
         }
     }
 
