@@ -75,6 +75,8 @@ WSGI_APPLICATION = 'andrewheyer_io.wsgi.application'
 # The dev and prod settings for db is separated since for the Options settings. In production the modification to DB is
 # done via online configuration GUI. Whereas for development we can directly modify the options. The options we set is
 # due to an issue reading characters like 'ä'.
+print(os.environ)
+
 if os.getenv('DEVELOPMENT'):
     DATABASES = {
         'default': {
